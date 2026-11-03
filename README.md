@@ -111,3 +111,19 @@ scripts/check.mjs            فحص البنية والمحتوى
 ## نسخة GitHub
 
 هذا المستودع يحتوي الشفرة والدليل التعليمي والتطويري ونسخة PDF. مجلد dist جاهز للاستضافة. يتم تشغيل نشر GitHub Pages من Actions عبر Deploy educational PWA to GitHub Pages بعد تفعيل Pages.
+
+
+## تفعيل رابط الموقع بخطوة إعداد واحدة
+
+فرع `gh-pages` جاهز ويحتوي التطبيق الثابت والدليل وملفات PWA. لتفعيله من GitHub:
+
+1. افتح **Settings → Pages** في هذا المستودع.
+2. اختر **Deploy from a branch** ضمن **Source**.
+3. اختر الفرع **gh-pages** والمجلد **/ (root)** ثم اضغط **Save**.
+
+الرابط المتوقع بعد اكتمال بناء Pages:
+https://ammaralmaliky60-sys.github.io/kol-yom-ataallamm/
+
+رفع الشفرة لا يفعّل Pages وحده. رفض اتصال GitHub الحالي إنشاء موقع Pages تلقائياً بخطأ صلاحيات 403؛ إعداد Pages أعلاه يتم من حساب مالك المستودع. بعد الحفظ قد يستغرق البناء دقيقة أو دقيقتين.
+
+للتحديث لاحقاً: يمكن نشر محتويات `dist` إلى فرع `gh-pages` مع إبقاء `.nojekyll`، أو اختيار GitHub Actions وتشغيل سير النشر المرفق. ارفع إصدار CACHE في sw.js عند تحديث ملفات التطبيق.
