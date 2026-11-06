@@ -25,5 +25,6 @@ test('update reload preserves saved learning progress and waits if quiz is open'
   assert.match(app,/reg.update\(\)/);
   assert.match(app,/querySelector\('#modal\[open\]'\)/);
   assert.match(app,/location.reload\(\)/);
-  assert.doesNotMatch(app.slice(app.lastIndexOf("if('serviceWorker'")),),/localStorage.clear|removeItem/);
+  const updateCode=app.substring(app.lastIndexOf("if('serviceWorker'"));
+  assert.doesNotMatch(updateCode,/localStorage.clear|removeItem/);
 });
