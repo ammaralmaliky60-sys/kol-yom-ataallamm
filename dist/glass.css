@@ -77,3 +77,7 @@ dialog{background:rgba(255,255,255,.94);border:1px solid #fff;border-radius:23px
 .quiz-options label>span{color:#805094}.quiz-question{color:#65347d}.answer-feedback.correct{color:#2d8459}.answer-feedback.incorrect{color:#b05676}.answer-review h4{color:#8b5aab}.answer-review>p{color:#9873af}.quiz-result h2{color:#8a50aa}.quiz-result>p{color:#9c7aae}.result-score{color:#a153cc}.word-token{color:#a571bf}.word-token.chosen{color:#9141b9}.quiz-hint{color:#9767b0}.vocab-card h4{color:#9a59b1}.example>p{color:#79538d}.example>span{color:#9872ad}.practical>p{color:#8b619d}.lesson-bottom p{color:#9670a5}.section-heading p{color:#8a6a9a}.continue-card p{color:#8f689f}.daily-word>strong{color:#8130c8}
 .course-art img{filter:saturate(1.2) drop-shadow(0 8px 10px #6038840d)}.hero-art{filter:saturate(1.16) drop-shadow(0 15px 13px #250d6333)}
 @media(max-width:760px){.panel,.metric,.course-card,.continue-card,.free-speech{-webkit-backdrop-filter:none;backdrop-filter:none}.hero{box-shadow:0 12px 25px #6e25ca24,inset 0 1px 0 #ffffff5c}}
+
+/* Site-wide typography: 700 weight for all Arabic/Latin content and controls.
+ * Existing IBM Plex Sans Arabic and DM Sans bold font files remain local/offline. */
+body,body *,body input::placeholder,body textarea::placeholder{font-weight:700!important}
