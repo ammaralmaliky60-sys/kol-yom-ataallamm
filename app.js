@@ -113,4 +113,26 @@ window.addEventListener('learn-storage-error',()=>toast('تعذر حفظ الت�
 window.addEventListener('offline',()=>toast('أنت الآن دون اتصال. الدروس المحفوظة متاحة، وقد يتوقف التعرف على الكلام.'));
 window.addEventListener('online',()=>toast('عاد الاتصال بالإنترنت. تعلماً ممتعاً!'));
 render();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(reg=>{reg.addEventListener('updatefound',()=>{const worker=reg.installing;worker?.addEventListener('statechange',()=>{if(worker.state==='installed')toast(navigator.serviceWorker.controller?'تحديث جديد جاهز؛ أعد فتح التطبيق لتفعيله.':'الدروس جاهزة الآن للاستخدام دون اتصال.');});});}).catch(()=>toast('تعذر تجهيز وضع عدم الاتصال. يمكنك متابعة التعلم وأنت متصل.'));}
+if('serviceWorker' in navigator){
+  const controlledAtOpen=Boolean(navigator.serviceWorker.controller);
+  let refreshedForUpdate=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(!controlledAtOpen||refreshedForUpdate)return;
+    refreshedForUpdate=true;
+    if(document.querySelector('#modal[open]')){
+      toast('تم تحديث الموقع؛ بعد إنهاء الاختبار حدّث الصفحة لعرض التصميم الجديد.');
+      return;
+    }
+    window.location.reload();
+  });
+  navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>{
+    reg.update().catch(()=>{});
+    reg.addEventListener('updatefound',()=>{
+      const worker=reg.installing;
+      worker?.addEventListener('statechange',()=>{
+        if(worker.state==='installed'&&!navigator.serviceWorker.controller)
+          toast('الدروس جاهزة الآن للاستخدام دون اتصال.');
+      });
+    });
+  }).catch(()=>toast('تعذر تجهيز وضع عدم الاتصال. يمكنك متابعة التعلم وأنت متصل.'));
+}
