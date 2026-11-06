@@ -1,4 +1,4 @@
-const CACHE='learn-everyday-v3';
+const CACHE='learn-everyday-v4';
 const FILES=['./','./index.html','./guide.html','./guide.pdf','./styles.css','./glass.css','./fonts.css','./app.js','./manifest.webmanifest','./modules/icons.js','./modules/diagrams.js','./modules/store.js','./modules/engine.js','./modules/audio.js','./data/english.js','./data/computer.js','./data/culture.js','./assets/hero-learning.svg','./assets/english.svg','./assets/computer.svg','./assets/culture.svg','./assets/icon.svg','./assets/icon-192.png','./assets/icon-512.png','./assets/apple-touch-icon.png',...Array.from({length:8},(_,i)=>'./assets/fonts/font-'+i+'.ttf')];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE&&k.startsWith('learn-everyday-')).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
