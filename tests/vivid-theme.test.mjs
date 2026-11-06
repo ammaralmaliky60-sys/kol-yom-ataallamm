@@ -9,7 +9,7 @@ const sw = read('../dist/sw.js');
 
 test('vivid visual layer loads after glass and preserves the approved bold font', () => {
   assert.ok(page.indexOf('./styles.css') < page.indexOf('./glass.css'));
-  assert.ok(page.indexOf('./glass.css') < page.indexOf('./vivid.css?v=2'));
+  assert.ok(page.indexOf('./glass.css') < page.indexOf('./vivid.css?v=3'));
   assert.match(read('../dist/glass.css'), /font-weight:700!important/);
   assert.match(css, /--purple:#6C22DE/);
   assert.match(css, /--pink:#C51B89/);
@@ -27,8 +27,8 @@ test('clear UI surfaces and focus affordances are present for desktop and mobile
 });
 
 test('PWA precaches the vivid stylesheet and refreshes cache version', () => {
-  assert.match(sw, /learn-everyday-v6/);
-  assert.ok(sw.includes("'./vivid.css?v=2'"));
+  assert.match(sw, /learn-everyday-v7/);
+  assert.ok(sw.includes("'./vivid.css?v=3'"));
 });
 
 test('ultra crisp layer avoids microscopic labels on phones and scales for 4K', () => {
