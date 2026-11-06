@@ -255,3 +255,172 @@ dialog{
 @media(forced-colors:active){
   .hero,.btn-primary,.nav-item.active{forced-color-adjust:auto}
 }
+
+
+/* Ultra-clear reading and UHD-scale layouts — v2.
+ * Strengthens legibility, preserves the established vivid palette and bold type,
+ * and keeps vector assets sharp across normal, Retina and 4K displays.
+ * CSS only: no changes to learning content or local progress.
+ */
+:root{
+  --text:#1D0F34;
+  --muted:#49335F;
+  --line:#CDAEEB;
+  --glass-border:#D1B4EF;
+}
+body{
+  color:var(--text);
+  font-size:15px;
+  line-height:1.85;
+  font-kerning:normal;
+  text-rendering:optimizeLegibility;
+}
+:where(h1,h2,h3,h4,h5,h6){letter-spacing:0;text-wrap:pretty}
+:where(p,li,small,span,label){text-rendering:optimizeLegibility}
+:where(.icon,svg){shape-rendering:geometricPrecision}
+.icon{stroke-width:2.1}
+:where(.hero-art,.course-art img,.course-art svg,.page-icon svg){
+  image-rendering:auto;
+  transform:translateZ(0);
+}
+/* Readable secondary text: avoid washed-out 9–11 px paragraphs. */
+.page-greeting p,.page-heading p,.lesson-header>p,
+.section-heading p,.course-body p,.continue-card p,
+.curriculum-info p,.metric>div>span,.metric>small{
+  color:#49335F;
+  font-size:13px;
+  line-height:1.8;
+}
+.nav-label,.subtle-label,.topbar-title,.date-chip,
+.lesson-meta,.course-meta,.course-bottom,
+.daily-word>small,.word-pronunciation,
+.info-strip,.quiz-hint,.quiz-heading>p,
+.lesson-aside p,.lesson-aside li,
+.vocab-card .pronunciation,.vocab-card h4{
+  color:#4F3566;
+  font-size:12px;
+  line-height:1.7;
+}
+.hero p,.teaching-section>p,.practical>p,
+.example>p,.teaching-example p,.speech-practice p,
+.quiz-options label>span,.quiz-question{
+  font-size:15px;
+  line-height:1.85;
+}
+.hero-note,.hero-tag,.course-badge,.course-bottom,
+.tiny-tag,.lesson-number,.word-label{
+  font-size:12px;
+}
+:where(.btn,.btn-primary,.btn-secondary,.btn-soft,.nav-item,.text-link){
+  font-size:14px;
+}
+:where(input,select,textarea){font-size:16px}
+.page-greeting h1,.page-heading h1{font-size:clamp(28px,2vw,37px);line-height:1.5}
+.section-heading h2{font-size:clamp(20px,1.2vw,25px)}
+.hero h2{font-size:clamp(28px,1.9vw,40px);line-height:1.48}
+.course-body h3,.curriculum-info h3,.continue-card h3{font-size:17px;line-height:1.65}
+.metric strong{font-size:clamp(25px,1.45vw,34px);line-height:1.3}
+.lesson-header h1{font-size:clamp(29px,2vw,39px)}
+.teaching-section h2{font-size:21px}
+.quiz-question{font-size:clamp(20px,1.4vw,26px)}
+/* Solid edges instead of heavy frosted translucency keep the picture crisp. */
+.panel,.metric,.course-card,.continue-card,.curriculum-row,
+.vocab-card,.unit-test,.free-speech,.empty-state{
+  background:#FFFFFF;
+  border:1px solid #CFB1EE;
+  box-shadow:0 9px 23px rgba(57,20,104,.13),0 2px 5px rgba(57,20,104,.055);
+}
+.course-art img,.hero-art{filter:saturate(1.22) contrast(1.12) drop-shadow(0 9px 12px rgba(46,16,106,.22))}
+.hero{border:1px solid #9B65F8}
+.btn-primary{border-color:#5016B1}
+.nav-item.active{border-color:#5013B6}
+.search-box,.text-answer,.inline-form input{
+  border-color:#B890E9;
+}
+.quiz-options label>span{
+  color:#221437;
+  border-color:#B48BE5;
+  background:#FFFFFF;
+  min-height:52px;
+}
+.quiz-options label>span>b{min-width:28px;min-height:28px}
+.progress-line{height:7px;background:#DCC9FA}
+.progress-line i{height:100%}
+:where(.course-card,.curriculum-row,.btn,.quiz-options label>span){
+  -webkit-tap-highlight-color:rgba(110,34,222,.12);
+}
+:where(button,a,input,select,textarea,[tabindex]):focus-visible{
+  outline:3px solid #5920C1;
+  outline-offset:3px;
+}
+/* Phone: raise tiny labels while maintaining the existing card grid/navigation. */
+@media(max-width:760px){
+  body{font-size:15px;line-height:1.75}
+  .page-greeting h1,.page-heading h1{font-size:26px}
+  .hero h2{font-size:25px}
+  .hero p{font-size:13px;line-height:1.75}
+  .hero-note,.hero-tag{font-size:11px}
+  .section-heading h2{font-size:19px}
+  .section-heading p,.page-greeting p,.page-heading p,
+  .course-body p,.curriculum-info p,.continue-card p{font-size:12px}
+  .course-meta,.course-bottom,.lesson-meta,.metric>small,
+  .metric>div>span,.subtle-label,.tiny-tag{font-size:11px}
+  .mobile-bottom a,.nav-item,.nav-label{font-size:12px}
+  .quiz-options label>span{font-size:15px;line-height:1.65}
+  .quiz-question{font-size:21px}
+  .teaching-section>p,.teaching-example p,.example>p{font-size:15px}
+}
+@media(max-width:520px){
+  .hero h2{font-size:23px}
+  .hero p{font-size:13px;max-width:65%}
+  .hero-note{font-size:11px}
+  .course-body h3{font-size:15px}
+  .course-meta,.course-bottom{font-size:11px}
+  .mobile-bottom a{font-size:11px}
+  .week-days small,.week-days span,.goal-row div>span{font-size:10px}
+  .course-card,.panel,.metric{border-color:#CDB0EB}
+  .quiz-options label>span{min-height:58px}
+}
+/* 4K and large desktop layouts: use more of the screen without oversized images. */
+@media(min-width:1920px){
+  body{font-size:17px;line-height:1.9}
+  .sidebar{width:260px;padding-inline:25px}
+  .workspace{margin-right:260px}
+  main{max-width:1760px;padding:42px 52px 70px}
+  .topbar{height:96px;padding-inline:46px}
+  .dashboard-grid{gap:28px;grid-template-columns:minmax(0,1fr) 305px}
+  .metrics,.course-grid{gap:20px}
+  .hero{min-height:315px;padding:40px}
+  .hero h2{font-size:40px}
+  .hero p{font-size:17px}
+  .hero-art{width:320px;height:275px}
+  .course-art{height:158px}
+  .course-art img{width:200px;height:150px}
+  .course-body h3{font-size:20px}
+  .course-body p,.section-heading p,.page-heading p,.page-greeting p{font-size:15px}
+  .course-meta,.course-bottom,.lesson-meta{font-size:13px}
+  .btn,.nav-item{font-size:16px}
+  .metric{padding:20px}
+  .metric strong{font-size:36px}
+  .section-heading h2{font-size:25px}
+  .teaching-section>p{font-size:18px}
+  .quiz-options label>span{font-size:18px;min-height:62px}
+}
+@media(min-width:2560px){
+  main{max-width:2240px;padding:54px 66px 90px}
+  body{font-size:18px}
+  .sidebar{width:292px}
+  .workspace{margin-right:292px}
+  .dashboard-grid{grid-template-columns:minmax(0,1fr) 370px;gap:34px}
+  .hero{min-height:350px}
+  .hero h2{font-size:48px}
+  .hero-art{width:355px;height:310px}
+  .course-art{height:185px}
+  .course-art img{width:230px;height:180px}
+  .page-greeting h1,.page-heading h1{font-size:39px}
+}
+@media(forced-colors:active){
+  .panel,.course-card,.metric,.curriculum-row,.quiz-options label>span{
+    border:1px solid CanvasText;
+  }
+}
