@@ -21,7 +21,7 @@ test('learning pages use local bold fonts everywhere including inputs and placeh
 
 test('bold typography ships with a fresh offline cache without touching progress storage', () => {
   const serviceWorker = read('../dist/sw.js');
-  assert.match(serviceWorker, /learn-everyday-v7/);
+  assert.match(serviceWorker, /learn-everyday-v8/);
   assert.match(serviceWorker, /'\.\/glass\.css\?v=7'/);
   assert.doesNotMatch(read('../dist/glass.css'), /localStorage|indexedDB|sessionStorage/);
 });
