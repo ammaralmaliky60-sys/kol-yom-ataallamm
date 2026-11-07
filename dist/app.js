@@ -39,7 +39,16 @@ function empty(title,text,href,label){return `<div class="empty-state">${icon('b
 function render(){cleanupAudio?.();cleanupAudio=null;stopSpeech();route=(location.hash.slice(1)||'home').split('?')[0];filter=render.lastRoute===route?filter:'all';render.lastRoute=route;let html=route==='home'?home():tracks[route]?coursePage(route):route.startsWith('lesson/')?lessonPage(route.split('/')[1]):route==='pronunciation'?pronunciationPage():route==='tests'?testsPage():route==='favorites'?favoritesPage():route==='profile'?profilePage():route==='search'?searchPage():empty('الصفحة غير موجودة','ابدأ من صفحتك الرئيسية.','home','الرئيسية');app.innerHTML=shell(html);document.title=(tracks[route]?.title||({home:'مساحتك التعليمية',profile:'ملفك الشخصي',pronunciation:'النطق والاستماع',tests:'الاختبارات'}[route]||'رحلتك التعليمية'))+' — كل يوم أتعلم';if(route.startsWith('lesson/')){const l=lessons.find(l=>l.id===route.split('/')[1]),el=document.querySelector('#lesson-speech');if(el)cleanupAudio=mountSpeechPractice(el,l.vocabulary?.[0]?.example||l.sections.find(s=>s.example)?.example||'Hello, I am learning English.');}if(route==='pronunciation')cleanupAudio=mountSpeechPractice(document.querySelector('#free-speech'),'Hello, I am learning English.');if(route==='search')document.querySelector('#search-form input').value=new URLSearchParams(location.hash.split('?')[1]||'').get('q')||'';}
 function openModal(html,cls=''){modal._cleanup?.();modal._cleanup=null;stopSpeech();modal.className=cls;modal.innerHTML=`<button class="modal-close icon-button" data-action="close-modal" aria-label="إغلاق">${icon('close')}</button>${html}`;if(!modal.open)modal.showModal();modal.scrollTop=0;}
 function closeModal(){modal._cleanup?.();modal._cleanup=null;stopSpeech();modal.close();quiz=null;}
-function beginQuiz(items,title,opts={}){if(!items.length)return toast('أكمل بعض الدروس أولاً لتجد أسئلة للمراجعة.');quiz={items,title,opts,index:0,answers:[],ordered:[]};renderQuiz();}
+function mixCaseOptions(q){
+ if(!q.context||!Array.isArray(q.options)||q.options.length<2)return q;
+ const options=[...q.options];
+ for(let i=options.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [options[i],options[j]]=[options[j],options[i]];
+ }
+ return {...q,options};
+}
+function beginQuiz(items,title,opts={}){if(!items.length)return toast('أكمل بعض الدروس أولاً لتجد أسئلة للمراجعة.');quiz={items:items.map(mixCaseOptions),title,opts,index:0,answers:[],ordered:[]};renderQuiz();}
 function renderQuiz(){
  const q=quiz.items[quiz.index],type=q.type||'choice';
  const options=q.options||(type==='boolean'?['صح','خطأ']:[]);
