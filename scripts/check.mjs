@@ -3,6 +3,7 @@ import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import assert from 'node:assert/strict';
+import vm from 'node:vm';
 import {prepareLessonAssessment} from '../dist/modules/assessment.js';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
@@ -24,6 +25,12 @@ assert.equal(manifest.dir, 'rtl');
 assert.equal(manifest.display, 'standalone');
 for (const icon of manifest.icons) await access(join(dist, icon.src));
 await access(join(dist, 'index.html'));
+const workerScope={self:{addEventListener(){}}};
+vm.runInNewContext((await readFile(join(dist,'sw.js'),'utf8'))+'\nglobalThis.requiredAssets=FILES;',workerScope);
+for(const asset of workerScope.requiredAssets){
+ const file=asset==='./'?'index.html':asset.split('?')[0];
+ await access(join(dist,file));
+}
 const ids = new Set();
 let lessons = 0;
 let questions = 0;

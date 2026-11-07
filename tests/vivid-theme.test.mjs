@@ -1,43 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-
-const read = p => readFileSync(new URL(p, import.meta.url), 'utf8');
-const css = read('../dist/vivid.css');
-const page = read('../dist/index.html');
-const sw = read('../dist/sw.js');
-
-test('vivid visual layer loads after glass and preserves the approved bold font', () => {
-  assert.ok(page.indexOf('./styles.css') < page.indexOf('./glass.css'));
-  assert.ok(page.indexOf('./glass.css') < page.indexOf('./vivid.css?v=5'));
-  assert.match(read('../dist/glass.css'), /font-weight:700!important/);
-  assert.match(css, /--purple:#6C22DE/);
-  assert.match(css, /--pink:#C51B89/);
-  assert.match(css, /--teal:#007D88/);
+import {readFileSync} from 'node:fs';
+const read=p=>readFileSync(new URL(p,import.meta.url),'utf8');
+test('one bundled stylesheet keeps explicit visual layers and the existing blue-purple identity',()=>{
+ const html=read('../dist/index.html'),css=read('../dist/site.css');
+ assert.match(html,/site\.css\?v=13/);
+ assert.doesNotMatch(html,/(?:glass|vivid|adventure|styles)\.css/);
+ assert.match(css,/@layer base,glass,vivid,theme/);
+ assert.ok(css.indexOf('@layer theme {')>css.indexOf('@layer vivid {'));
+ assert.match(css,/--purple:#5540e9/);
+ assert.match(css,/#172d86/);
+ assert.match(css,/prefers-reduced-motion/);
+ assert.match(css,/focus-visible/);
 });
-
-test('clear UI surfaces and focus affordances are present for desktop and mobile', () => {
-  for (const rule of ['.hero{', '.course-card{', '.quiz-options label>span{', '.btn-primary{',
-    '.sidebar,.topbar,.mobile-bottom{', '@media(max-width:520px)', 'focus-visible']) {
-    assert.ok(css.includes(rule), rule);
-  }
-  assert.match(css, /#F4EEFF/);
-  assert.match(css, /#24143F/);
-  assert.doesNotMatch(css, /localStorage|indexedDB|sessionStorage|fetch\(/);
-});
-
-test('PWA precaches the vivid stylesheet and refreshes cache version', () => {
-  assert.match(sw, /learn-everyday-v9/);
-  assert.ok(sw.includes("'./vivid.css?v=5'"));
-});
-
-test('ultra crisp layer avoids microscopic labels on phones and scales for 4K', () => {
-  assert.match(css, /@media\(max-width:520px\)/);
-  assert.match(css, /\.week-days small,\.week-days span,\.goal-row div>span\{font-size:10px\}/);
-  assert.match(css, /@media\(min-width:1920px\)/);
-  assert.match(css, /@media\(min-width:2560px\)/);
-  assert.match(css, /shape-rendering:geometricPrecision/);
-  assert.match(css, /text-rendering:optimizeLegibility/);
-  assert.match(css, /\.quiz-options label>span\{min-height:58px\}/);
-  assert.doesNotMatch(css, /localStorage|indexedDB|sessionStorage|fetch\(/);
+test('responsive and high-resolution layouts remain part of the compiled styles',()=>{
+ const css=read('../dist/site.css');
+ for(const rule of ['@media(max-width:760px)','@media(max-width:380px)','@media(min-width:1920px)','@media(min-width:2560px)'])assert.ok(css.includes(rule),rule);
+ assert.match(css,/\.sidebar \{ visibility:hidden/);
+ assert.match(css,/\.menu-open \.sidebar \{ visibility:visible/);
+ assert.doesNotMatch(read('../dist/theme.css'),/!important/);
 });

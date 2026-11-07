@@ -23,9 +23,22 @@ export function difficultyOf(q){
  return 'basic';
 }
 export const difficultyName=level=>gradeNames[level]||gradeNames.basic;
+export function questionIdFor(q){
+ if(q._questionId)return q._questionId;
+ if(q.id)return q.id;
+ const text=q.audio?'listening:'+q.audio:(q.type||'choice')+':'+q.prompt;
+ let hash=2166136261;
+ for(let i=0;i<text.length;i++)hash=Math.imul(hash^text.charCodeAt(i),16777619);
+ return 'q-'+(hash>>>0).toString(36);
+}
 export function taggedQuestion(q,lesson){
- return {...q,skill:skillOf(q),difficulty:difficultyOf(q),
+ return {...q,_questionId:questionIdFor(q),skill:skillOf(q),difficulty:difficultyOf(q),
   ...lesson?{_lessonId:lesson.id,_lessonTitle:lesson.title,_track:lesson.track}:{}};
+}
+export function answerRecord({question:q,given,correct}){
+ return {lessonId:q._lessonId||null,questionId:questionIdFor(q),type:q.type||'choice',
+  ...(q.audio?{audio:q.audio}:{}),prompt:q.prompt,answer:q.answer,given,
+  explanation:q.explanation,correct,skill:skillOf(q),difficulty:difficultyOf(q)};
 }
 export function shuffle(items,rng=Math.random){
  const list=[...items];
@@ -43,8 +56,11 @@ export function prepareQuestions(items,opts={},rng=Math.random){
 }
 const scoreDifficulty={advanced:5,medium:3,basic:1};
 function previousMistake(history,lessonId,prompt){
- return (history||[]).slice(-30).some(item=>item.lessonId===lessonId&&
-   (item.answers||[]).some(a=>a.prompt===prompt&&!a.correct));
+ for(const item of (history||[]).slice(-30).reverse()){
+  const answer=(item.answers||[]).find(a=>(a.lessonId||item.lessonId)===lessonId&&a.prompt===prompt);
+  if(answer)return answer.correct===false;
+ }
+ return false;
 }
 export function selectLessonQuestions(lesson,{count=2,history=[]}={},rng=Math.random){
  const questions=prepareLessonAssessment(lesson);
@@ -122,7 +138,9 @@ export function integratedChallenge(lesson){
   pair(wrong1,wrong2)
  ];
  if(new Set(options).size!==4)return null;
+ const evidence=[...new Set([first,second].flatMap(q=>q.context?.facts||[]))];
  return {
+  id:'integrated-'+lesson.id,
   type:'choice',
   prompt:'أي زوج من الإجابات يحقق المهمتين معاً دون خطأ؟',
   options,answer:correct,
@@ -130,6 +148,7 @@ export function integratedChallenge(lesson){
    id:'integrated-'+lesson.id,
    title:'تحدي التفكير المركّب · '+lesson.title,
    facts:[
+    ...evidence,
     'المهمة الأولى: '+first.prompt,
     'المهمة الثانية: '+second.prompt,
     'اختر زوجاً صحيحاً للمهمتين؛ الإجابة الأولى قبل علامة | والثانية بعدها.'
@@ -168,16 +187,46 @@ export function buildMixedAssessment(lessons,history=[],limit=20,rng=Math.random
  }
  return selected;
 }
+export function buildListeningAssessment(lessons,limit=12,rng=Math.random){
+ const available=lessons.filter(l=>l.track==='english').flatMap(l=>
+  (l.vocabulary||[]).map(word=>({word,lesson:l})));
+ const unique=[...new Map(shuffle(available,rng).map(item=>[item.word.word,item])).values()].slice(0,limit);
+ const meanings=[...new Set(available.map(item=>item.word.meaning))];
+ return unique.map(({word:w,lesson})=>{
+  const inLesson=(lesson.vocabulary||[]).filter(v=>v.meaning!==w.meaning).map(v=>v.meaning);
+  const distractions=[...new Set([...shuffle(inLesson,rng),...shuffle(meanings.filter(m=>m!==w.meaning),rng)])].slice(0,3);
+  return taggedQuestion({type:'listening',prompt:'استمع جيداً، ثم حدد المعنى العربي الأقرب للكلمة.',
+   audio:w.word,options:[w.meaning,...distractions],answer:w.meaning,
+   explanation:`${w.word} تعني ${w.meaning}. ${w.example} — ${w.translation}`},lesson);
+ });
+}
 export function buildMistakeAssessment(lessons,history=[],limit=20,rng=Math.random){
  const byId=new Map(lessons.map(l=>[l.id,l]));
- const pending=new Map();
+ const banks=new Map(lessons.map(l=>[l.id,prepareLessonAssessment(l)]));
+ const byPrompt=new Map();
+ for(const bank of banks.values())for(const q of bank){
+  if(!byPrompt.has(q.prompt))byPrompt.set(q.prompt,[]);
+  byPrompt.get(q.prompt).push(q);
+ }
+ const pending=new Map(),seen=new Set();
  for(const item of [...history].reverse()){
-  const lesson=byId.get(item.lessonId);
-  if(!lesson)continue;
-  for(const answer of item.answers||[]){
-   if(answer.correct||pending.has(lesson.id+'@'+answer.prompt))continue;
-   const source=prepareLessonAssessment(lesson).find(q=>q.prompt===answer.prompt);
-   if(source)pending.set(lesson.id+'@'+answer.prompt,taggedQuestion(source,lesson));
+  const answers=Array.isArray(item.answers)?item.answers:(item.wrong||[]).map(a=>({...a,correct:false}));
+  for(const answer of [...answers].reverse()){
+   let source,lesson=byId.get(answer.lessonId||item.lessonId);
+   if(lesson){
+    source=banks.get(lesson.id).find(q=>answer.questionId?q._questionId===answer.questionId:q.prompt===answer.prompt);
+    if(!source&&answer.type==='listening'&&answer.audio)
+     source=buildListeningAssessment([lesson],Infinity,rng).find(q=>q.audio===answer.audio);
+   }else if(!answer.lessonId&&!item.lessonId){
+    // Older mixed results omitted lesson IDs. Recover only an unambiguous match.
+    const candidates=(byPrompt.get(answer.prompt)||[]).filter(q=>!answer.answer||q.answer===answer.answer);
+    if(candidates.length===1){source=candidates[0];lesson=byId.get(source._lessonId);}
+   }
+   if(!source||!lesson)continue;
+   const key=lesson.id+'@'+source._questionId;
+   if(seen.has(key))continue;
+   seen.add(key);
+   if(answer.correct===false)pending.set(key,source);
   }
  }
  return shuffle([...pending.values()],rng).slice(0,limit);
