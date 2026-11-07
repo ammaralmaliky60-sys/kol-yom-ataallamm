@@ -4,7 +4,7 @@ import {cultureLessons} from './data/culture.js?v=8';
 import {loadState,saveState,completeLesson,recordQuiz,toggleFavorite,streakDays,today} from './modules/store.js';
 import {levels,gradeAnswer,isUnlocked,nextLesson,progressFor,currentLevel} from './modules/engine.js';
 import {prepareQuestions,prepareLessonAssessment,buildUnitAssessment,buildPlacementAssessment,
- buildMixedAssessment,buildMistakeAssessment,diagnosticReport,difficultyName,shuffle,nextPractice} from './modules/assessment.js';
+ buildMixedAssessment,buildMistakeAssessment,diagnosticReport,difficultyName,shuffle,nextPractice} from './modules/assessment.js?v=9';
 import {speak,stopSpeech,mountSpeechPractice} from './modules/audio.js';
 import {icon} from './modules/icons.js';
 import {learningDiagram} from './modules/diagrams.js';
