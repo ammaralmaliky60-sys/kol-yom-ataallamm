@@ -1,27 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-
-const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
-
-test('learning pages use local bold fonts everywhere including inputs and placeholders', () => {
-  const skin = read('../dist/glass.css');
-  const fonts = read('../dist/fonts.css');
-  const index = read('../dist/index.html');
-  const guide = read('../dist/guide.html');
-  const generator = read('../scripts/make-guide.py');
-  const bold = /body,body \*,body input::placeholder,body textarea::placeholder\{font-weight:700!important\}/;
-  assert.match(skin, bold);
-  assert.match(guide, bold);
-  assert.match(generator, bold);
-  assert.ok(index.indexOf('./glass.css') > index.indexOf('./styles.css'));
-  assert.match(fonts, /font-family: 'IBM Plex Sans Arabic';[\s\S]*?font-weight: 700;/);
-  assert.match(fonts, /font-family: 'DM Sans';[\s\S]*?font-weight: 700;/);
+import {readFileSync} from 'node:fs';
+const read=p=>readFileSync(new URL(p,import.meta.url),'utf8');
+test('all local font faces use valid WOFF2 files and preserve four weights for both scripts',()=>{
+ const css=read('../dist/fonts.css');
+ const files=[...css.matchAll(/url\(([^)]+)\)/g)].map(m=>m[1]);
+ assert.equal(files.length,8);
+ for(const file of files){
+  assert.ok(file.endsWith('.woff2'));
+  const bytes=readFileSync(new URL('../dist/'+file,import.meta.url));
+  assert.equal(bytes.subarray(0,4).toString(),'wOF2');
+ }
+ for(const weight of [400,500,600,700])assert.equal([...css.matchAll(new RegExp('font-weight: '+weight+';','g'))].length,2);
+ assert.doesNotMatch(css,/https?:/);
+ assert.equal([...css.matchAll(/font-display: swap/g)].length,8);
 });
-
-test('bold typography ships with a fresh offline cache without touching progress storage', () => {
-  const serviceWorker = read('../dist/sw.js');
-  assert.match(serviceWorker, /learn-everyday-v9/);
-  assert.match(serviceWorker, /'\.\/glass\.css\?v=7'/);
-  assert.doesNotMatch(read('../dist/glass.css'), /localStorage|indexedDB|sessionStorage/);
+test('reading text is no longer forced bold and typography does not access progress storage',()=>{
+ const theme=read('../dist/theme.css'),glass=read('../dist/glass.css');
+ assert.doesNotMatch(glass,/body,body \*[^}]*font-weight:700!important/);
+ assert.match(theme,/body\s*\{[^}]*font-weight:400/s);
+ assert.match(theme,/h1,h2,h3,h4,strong,b\s*\{[^}]*font-weight:700/);
+ assert.doesNotMatch(theme,/localStorage|indexedDB|sessionStorage/);
 });
