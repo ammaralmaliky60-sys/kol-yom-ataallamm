@@ -4,7 +4,7 @@
  * Practical assignments are intentionally ungraded without a human evaluator.
  */
 const actionCue = /(?:لماذا|أي (?:إجراء|تصرف|قرار|خطوة|خيار|تفسير|استنتاج|حل)|كيف (?:تتصرف|تعالج|تختبر|تقرر|تتحقق|تتأكد)|ماذا (?:تفعل|يحدث|تستنتج|تختار|لو)|إذا|عندما|في حال|الحالة|السيناريو|استنتج|احسب|قارن|ما السبب|what (?:should|would)|which (?:sentence|option) (?:best|fits)|if you|why should)/i;
-const gradeNames = Object.freeze({basic:'أساسي',medium:'متوسط',advanced:'تطبيقي'});
+const gradeNames = Object.freeze({basic:'أساسي',medium:'متوسط',advanced:'استدلالي'});
 
 export function skillOf(q){
  if(typeof q.skill==='string' && q.skill.trim())return q.skill.trim();
@@ -47,7 +47,7 @@ function previousMistake(history,lessonId,prompt){
    (item.answers||[]).some(a=>a.prompt===prompt&&!a.correct));
 }
 export function selectLessonQuestions(lesson,{count=2,history=[]}={},rng=Math.random){
- const questions=(lesson?.questions||[]).map(q=>taggedQuestion(q,lesson));
+ const questions=prepareLessonAssessment(lesson);
  const shuffled=shuffle(questions,rng);
  shuffled.sort((a,b)=>{
   const score=q=>(scoreDifficulty[q.difficulty]||1)+
@@ -62,9 +62,57 @@ export function selectLessonQuestions(lesson,{count=2,history=[]}={},rng=Math.ra
  }
  return unique;
 }
+/*
+ * Every lesson receives one integrative reasoning question. Its two sub-tasks
+ * and explanation are copied from authored, auto-gradable source questions,
+ * so a correct combination is objectively verifiable (no AI guesswork).
+ */
+export function integratedChallenge(lesson){
+ const qualified=(lesson?.questions||[]).filter(q=>
+  ['choice','boolean'].includes(q.type)&&!q.audio&&
+  Array.isArray(q.options)&&q.options.length>=2&&
+  q.options.includes(q.answer)&&
+  q.options.some(v=>v!==q.answer)
+ );
+ if(qualified.length<2)return null;
+ const ranked=[...qualified].sort((a,b)=>
+  (scoreDifficulty[difficultyOf(b)]||0)-(scoreDifficulty[difficultyOf(a)]||0));
+ const first=ranked[0];
+ const second=ranked.find(q=>q!==first && q.prompt!==first.prompt);
+ if(!second)return null;
+ const wrong1=first.options.find(item=>item!==first.answer);
+ const wrong2=second.options.find(item=>item!==second.answer);
+ const pair=(left,right)=>String(left)+' | '+String(right);
+ const correct=pair(first.answer,second.answer);
+ const options=[
+  correct,
+  pair(wrong1,second.answer),
+  pair(first.answer,wrong2),
+  pair(wrong1,wrong2)
+ ];
+ if(new Set(options).size!==4)return null;
+ return {
+  type:'choice',
+  prompt:'أي زوج من الإجابات يحقق المهمتين معاً دون خطأ؟',
+  options,answer:correct,
+  context:{
+   id:'integrated-'+lesson.id,
+   title:'تحدي التفكير المركّب · '+lesson.title,
+   facts:[
+    'المهمة الأولى: '+first.prompt,
+    'المهمة الثانية: '+second.prompt,
+    'اختر زوجاً صحيحاً للمهمتين؛ الإجابة الأولى قبل علامة | والثانية بعدها.'
+   ]
+  },
+  skill:'الربط بين المفاهيم',
+  difficulty:'advanced',
+  explanation:'الأولى: '+first.explanation+' الثانية: '+second.explanation
+ };
+}
 export function prepareLessonAssessment(lesson){
- // Preserve the authored case-study order and pre-existing exam sequence.
- return (lesson.questions||[]).map(q=>taggedQuestion(q,lesson));
+ const originals=(lesson.questions||[]).map(q=>taggedQuestion(q,lesson));
+ const extra=integratedChallenge(lesson);
+ return extra?[...originals,taggedQuestion(extra,lesson)]:originals;
 }
 export function buildUnitAssessment(lessons,history=[],count=2,rng=Math.random){
  return lessons.flatMap(l=>selectLessonQuestions(l,{count,history},rng));
@@ -97,7 +145,7 @@ export function buildMistakeAssessment(lessons,history=[],limit=20,rng=Math.rand
   if(!lesson)continue;
   for(const answer of item.answers||[]){
    if(answer.correct||pending.has(lesson.id+'@'+answer.prompt))continue;
-   const source=lesson.questions.find(q=>q.prompt===answer.prompt);
+   const source=prepareLessonAssessment(lesson).find(q=>q.prompt===answer.prompt);
    if(source)pending.set(lesson.id+'@'+answer.prompt,taggedQuestion(source,lesson));
   }
  }
