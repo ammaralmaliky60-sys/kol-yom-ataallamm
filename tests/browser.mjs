@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { englishLessons } from '../dist/data/english.js';
 import { computerLessons } from '../dist/data/computer.js';
 import { cultureLessons } from '../dist/data/culture.js';
+import { prepareLessonAssessment } from '../dist/modules/assessment.js';
 
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const qa = path.join(project, 'qa');
@@ -68,12 +69,13 @@ async function answerQuestion(page, question, correct = true) {
 }
 async function finishLessonQuiz(page, lesson, pass = true) {
   await page.locator(`[data-action=quiz][data-id="${lesson.id}"]`).click();
-  for (const question of lesson.questions) await answerQuestion(page, question, pass);
+  const assessedQuestions = prepareLessonAssessment(lesson);
+  for (const question of assessedQuestions) await answerQuestion(page, question, pass);
   await page.locator('.quiz-result').waitFor();
   const saved = await storage(page);
   assert.equal(saved.history.at(-1).score, pass ? 100 : 0);
-  assert.equal(saved.history.at(-1).total, lesson.questions.length, 'Duplicate submissions must not change the test size');
-  assert.equal(saved.history.at(-1).answers.length, lesson.questions.length, 'Each question must be recorded once');
+  assert.equal(saved.history.at(-1).total, assessedQuestions.length, 'Duplicate submissions must not change the test size');
+  assert.equal(saved.history.at(-1).answers.length, assessedQuestions.length, 'Each question must be recorded once');
 }
 
 try {

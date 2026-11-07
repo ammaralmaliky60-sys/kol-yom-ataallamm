@@ -503,3 +503,43 @@ body{
 @media(prefers-reduced-motion:reduce){
  .quiz-evidence-chevron{transition:none}
 }
+
+/* Mastery-driven assessments: explicit difficulty, actionable next step. */
+.quiz-assessment-tags{
+ display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0 12px;
+}
+.quiz-difficulty{
+ display:inline-flex;align-items:center;border-radius:999px;
+ padding:5px 12px;border:1px solid #C6B4E7;
+ background:#F4EDFF;color:#523377;font-size:12px;
+}
+.quiz-difficulty-medium{background:#DBF7FF;border-color:#A0DCE9;color:#145F7E}
+.quiz-difficulty-advanced{background:#FFF0DC;border-color:#EEC389;color:#86471D}
+.assessment-review-bar{
+ margin:16px 0 8px;
+ display:flex;gap:18px;justify-content:space-between;align-items:center;
+ background:linear-gradient(110deg,#EAD9FF,#F6EDFF 60%,#E6FCFB);
+ border:1px solid #BC9AE9;border-radius:17px;
+ padding:19px 24px;
+}
+.assessment-review-bar strong{display:block;font-size:19px;color:#35135C}
+.assessment-review-bar p{color:#52386C;line-height:1.75;margin:6px 0 0;font-size:13px}
+.assessment-review-bar .btn{flex:none;white-space:normal;text-align:center}
+.quiz-applied-task{
+ margin:18px 0 23px;padding:19px;
+ border:1px solid #A7D5C7;border-right:5px solid #008F8E;
+ border-radius:14px;
+ background:linear-gradient(130deg,#E8FFFB,#F7FFFE);
+}
+.quiz-applied-task h3{display:flex;align-items:center;gap:8px;color:#165E63;font-size:18px;margin:0 0 8px}
+.quiz-applied-task h3 .icon{width:20px;height:20px;color:#087C8F}
+.quiz-applied-task p{color:#254C50;line-height:1.9;font-size:15px;margin:7px 0 10px}
+.quiz-applied-task small{display:block;color:#37636A;font-size:12px;line-height:1.8}
+@media(max-width:600px){
+ .assessment-review-bar{padding:15px;flex-direction:column;align-items:stretch}
+ .assessment-review-bar strong{font-size:17px}
+ .assessment-review-bar .btn{width:100%}
+ .quiz-applied-task{padding:14px}
+ .quiz-assessment-tags{gap:6px}
+ .quiz-difficulty,.quiz-assessment-tags .quiz-skill{font-size:11px}
+}

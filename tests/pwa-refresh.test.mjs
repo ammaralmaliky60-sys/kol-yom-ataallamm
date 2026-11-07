@@ -5,14 +5,14 @@ const read=path=>readFileSync(new URL(path,import.meta.url),'utf8');
 
 test('HTML loads independently versioned assets and the updated site-wide vivid stylesheet',()=>{
   const html=read('../dist/index.html');
-  for(const path of ['styles.css?v=7','glass.css?v=7','vivid.css?v=4','app.js?v=8'])
+  for(const path of ['styles.css?v=7','glass.css?v=7','vivid.css?v=5','app.js?v=9'])
     assert.ok(html.includes(path),path);
-  assert.ok(html.indexOf('glass.css?v=7')<html.indexOf('vivid.css?v=4'));
+  assert.ok(html.indexOf('glass.css?v=7')<html.indexOf('vivid.css?v=5'));
 });
 test('service worker installs latest assets, bypasses HTTP cache and activates right away',()=>{
   const sw=read('../dist/sw.js');
-  assert.match(sw,/learn-everyday-v8/);
-  for(const path of ['styles.css?v=7','glass.css?v=7','vivid.css?v=4','app.js?v=8'])
+  assert.match(sw,/learn-everyday-v9/);
+  for(const path of ['styles.css?v=7','glass.css?v=7','vivid.css?v=5','app.js?v=9'])
     assert.ok(sw.includes(path),path);
   assert.match(sw,/skipWaiting\(\)/);
   assert.match(sw,/cache:'no-store'/);

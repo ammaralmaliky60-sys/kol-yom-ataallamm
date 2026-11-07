@@ -3,6 +3,7 @@ import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import assert from 'node:assert/strict';
+import {prepareLessonAssessment} from '../dist/modules/assessment.js';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
 async function walk(dir) {
@@ -26,6 +27,7 @@ await access(join(dist, 'index.html'));
 const ids = new Set();
 let lessons = 0;
 let questions = 0;
+let assessmentQuestions = 0;
 for (const [file, name] of [['english.js', 'englishLessons'], ['computer.js', 'computerLessons'], ['culture.js', 'cultureLessons']]) {
   const content = await import(pathToFileURL(join(dist, 'data', file)));
   assert.ok(Array.isArray(content[name]) && content[name].length > 0, `Missing ${name}`);
@@ -33,6 +35,11 @@ for (const [file, name] of [['english.js', 'englishLessons'], ['computer.js', 'c
     assert.ok(lesson.id && !ids.has(lesson.id), `Duplicate lesson ID ${lesson.id}`);
     ids.add(lesson.id);
     assert.ok(lesson.title && lesson.description && lesson.sections?.length && lesson.questions?.length, `Incomplete lesson ${lesson.id}`);
+    const assessed=prepareLessonAssessment(lesson);
+    assert.equal(assessed.length,lesson.questions.length+1,`Missing integrated challenge in ${lesson.id}`);
+    const finalQuestion=assessed.at(-1);
+    assert.ok(finalQuestion.options?.includes(finalQuestion.answer),`Challenge answer missing in ${lesson.id}`);
+    assessmentQuestions+=assessed.length;
     for (const question of lesson.questions) {
       assert.ok(['choice', 'input', 'order', 'boolean', 'listening'].includes(question.type), `Unknown type ${lesson.id}`);
       assert.ok(question.prompt && typeof question.answer === 'string' && question.explanation, `Incomplete question ${lesson.id}`);
@@ -42,4 +49,6 @@ for (const [file, name] of [['english.js', 'englishLessons'], ['computer.js', 'c
     lessons++;
   }
 }
-console.log(`فحص ناجح: ${files.filter(f=>f.endsWith('.js')).length} ملفات JavaScript، ${lessons} دروس، ${questions} أسئلة، وأيقونات PWA.`);
+assert.equal(lessons,146);
+assert.equal(assessmentQuestions,questions+lessons);
+console.log(`فحص ناجح: ${lessons} درساً، ${questions} سؤالاً مؤلفاً، ${assessmentQuestions} سؤالاً مع تحديات الربط، وملفات PWA سليمة.`);

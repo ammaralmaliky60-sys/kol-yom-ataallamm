@@ -44,12 +44,12 @@ test('shared evidence UI supports review and skill diagnostics without modifying
   const skin = read('../dist/vivid.css');
   assert.match(app, /quiz-evidence/);
   assert.match(app, /quizSkillsSummary/);
-  assert.match(app, /items\.map\(mixCaseOptions\)/);
+  assert.match(app, /items:prepareQuestions\(items\)/);
   assert.match(app, /context\?\.id/);
   assert.match(app, /l\.questions\.some\(q=>q\.context\)/);
   assert.match(skin, /\.quiz-evidence\{/);
   assert.match(skin, /\.quiz-skills\{/);
-  assert.match(read('../dist/sw.js'), /learn-everyday-v8/);
-  assert.match(read('../dist/index.html'), /vivid\.css\?v=4/);
+  assert.match(read('../dist/sw.js'), /learn-everyday-v9/);
+  assert.match(read('../dist/index.html'), /vivid\.css\?v=5/);
   assert.doesNotMatch(app, /localStorage\.clear\(/);
 });
