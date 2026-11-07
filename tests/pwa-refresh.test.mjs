@@ -12,7 +12,7 @@ test('HTML loads independently versioned assets and the updated site-wide vivid 
 test('service worker installs latest assets, bypasses HTTP cache and activates right away',()=>{
   const sw=read('../dist/sw.js');
   assert.match(sw,/learn-everyday-v9/);
-  for(const path of ['styles.css?v=7','glass.css?v=7','vivid.css?v=5','app.js?v=9'])
+  for(const path of ['styles.css?v=7','glass.css?v=7','vivid.css?v=5','adventure.css?v=1','app.js?v=9','modules/assessment.js?v=9'])
     assert.ok(sw.includes(path),path);
   assert.match(sw,/skipWaiting\(\)/);
   assert.match(sw,/cache:'no-store'/);
