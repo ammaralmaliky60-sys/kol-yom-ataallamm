@@ -51,6 +51,7 @@ export function selectLessonQuestions(lesson,{count=2,history=[]}={},rng=Math.ra
  const shuffled=shuffle(questions,rng);
  shuffled.sort((a,b)=>{
   const score=q=>(scoreDifficulty[q.difficulty]||1)+
+   (q.skill==='الربط بين المفاهيم'?5:0)+
    (previousMistake(history,lesson.id,q.prompt)?3:0);
   return score(b)-score(a);
  });
@@ -67,21 +68,51 @@ export function selectLessonQuestions(lesson,{count=2,history=[]}={},rng=Math.ra
  * and explanation are copied from authored, auto-gradable source questions,
  * so a correct combination is objectively verifiable (no AI guesswork).
  */
+function incorrectAlternative(q,lesson){
+ const normalized=value=>String(value??'').toLowerCase().trim();
+ if(Array.isArray(q.options)&&q.options.includes(q.answer)){
+  const wrong=q.options.find(value=>normalized(value)!==normalized(q.answer));
+  if(wrong!==undefined)return wrong;
+ }
+ if(q.type==='order'){
+  const tokens=String(q.answer).split(/\s+/);
+  if(tokens.length>1){
+    const swapped=[...tokens];[swapped[0],swapped[1]]=[swapped[1],swapped[0]];
+    if(swapped.join(' ')!==q.answer)return swapped.join(' ');
+  }
+ }
+ if(q.type==='input'){
+  const distractors={
+   'are':'is','is':'are','am':'are','do':'does','does':'do',
+   'has':'have','have':'has','was':'were','were':'was',
+   'a':'an','an':'a','this':'these','these':'this',
+   'works':'work','work':'works','cpu':'gpu','ram':'rom',
+   'ssd':'hdd','hdd':'ssd','yes':'no','no':'yes'
+  };
+  const known=distractors[normalized(q.answer)];
+  if(known)return known;
+  const other=(lesson.questions||[]).flatMap(x=>(x.options||[])).find(value=>
+     normalized(value)!==normalized(q.answer)&&
+     Math.abs(String(value).length-String(q.answer).length)<=5
+  );
+  if(other)return other;
+ }
+ return null;
+}
 export function integratedChallenge(lesson){
  const qualified=(lesson?.questions||[]).filter(q=>
-  ['choice','boolean'].includes(q.type)&&!q.audio&&
-  Array.isArray(q.options)&&q.options.length>=2&&
-  q.options.includes(q.answer)&&
-  q.options.some(v=>v!==q.answer)
+  ['choice','boolean','input','order'].includes(q.type)&&!q.audio&&
+  typeof q.answer==='string'&&q.answer.trim()&&
+  incorrectAlternative(q,lesson)!==null
  );
  if(qualified.length<2)return null;
  const ranked=[...qualified].sort((a,b)=>
   (scoreDifficulty[difficultyOf(b)]||0)-(scoreDifficulty[difficultyOf(a)]||0));
  const first=ranked[0];
- const second=ranked.find(q=>q!==first && q.prompt!==first.prompt);
+ const second=ranked.find(q=>q!==first&&q.prompt!==first.prompt);
  if(!second)return null;
- const wrong1=first.options.find(item=>item!==first.answer);
- const wrong2=second.options.find(item=>item!==second.answer);
+ const wrong1=incorrectAlternative(first,lesson);
+ const wrong2=incorrectAlternative(second,lesson);
  const pair=(left,right)=>String(left)+' | '+String(right);
  const correct=pair(first.answer,second.answer);
  const options=[
