@@ -44,7 +44,7 @@ test('shared evidence UI supports review and skill diagnostics without modifying
   const skin = read('../dist/vivid.css');
   assert.match(app, /quiz-evidence/);
   assert.match(app, /quizSkillsSummary/);
-  assert.match(app, /items\.map\(mixCaseOptions\)/);
+  assert.match(app, /items:prepareQuestions\(items\)/);
   assert.match(app, /context\?\.id/);
   assert.match(app, /l\.questions\.some\(q=>q\.context\)/);
   assert.match(skin, /\.quiz-evidence\{/);
