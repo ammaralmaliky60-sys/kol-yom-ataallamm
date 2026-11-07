@@ -1,0 +1,52 @@
+/* Adventure Learning — visual-only layer, 2026-11. Preserves app logic and user data. */
+:root{--purple:#5540e9;--purple-dark:#3022a3;--pink:#f43f91;--teal:#009e88;--text:#172554;--muted:#485477;--line:#d2dcff;--bg:#edf5ff;--glass:#fff;--glass-border:#cddcff;--shadow:0 10px 0 #1c4c9b12,0 18px 35px #1c4c9b17;--radius:22px}
+html{background:#edf5ff}
+body{font-weight:700!important;color:#172554;background:radial-gradient(circle at 15% 4%,#d8f6ff 0,transparent 33%),radial-gradient(circle at 85% 20%,#e6dcff 0,transparent 35%),linear-gradient(160deg,#edf5ff,#f8faff 55%,#eaf7ff)!important}
+body,button,input,textarea,select{font-weight:700!important}
+h1,h2,h3,h4,.brand,.nav-item,.btn-primary,.course-card strong{font-weight:850!important;letter-spacing:-.02em}
+h1{font-size:clamp(27px,3vw,42px)}
+h2{font-size:clamp(20px,2vw,28px)}
+.sidebar{background:linear-gradient(180deg,#172d86,#29247e)!important;border-color:#ffffff24!important;box-shadow:-8px 0 35px #0b246329!important}
+.sidebar .brand,.sidebar .brand small,.sidebar .nav-label,.sidebar .nav-item,.sidebar .help-link,.sidebar .sidebar-footer{color:#fff!important}
+.sidebar .nav-item{border:1px solid #ffffff24;border-radius:15px;margin-bottom:8px}
+.sidebar .nav-item:hover{background:#ffffff22!important;transform:translateX(-3px)}
+.sidebar .nav-item.active{background:linear-gradient(120deg,#2678ff,#6159ff)!important;box-shadow:0 6px 0 #111e6b,0 12px 24px #060c4640!important;border:1px solid #a2d9ff!important}
+.sidebar .brand-symbol{color:#ffe34b!important}
+.topbar{background:linear-gradient(95deg,#ffffffef,#edf6ffed)!important;border-bottom:2px solid #d6e4ff!important;box-shadow:0 8px 24px #233fa012}
+.topbar-title{color:#30439c!important;font-weight:800}
+.search-box{background:#fff!important;border:2px solid #cbd9ff!important;border-radius:16px!important;box-shadow:0 4px 0 #dfe7ff!important}
+main{max-width:1540px}
+.page-greeting h1,.page-heading h1,.lesson-header h1,.section-heading h2,.card-head h2{color:#162b81!important;text-shadow:0 2px 0 #fff}
+.eyebrow{color:#5d39d9!important}
+.date-chip{background:#fff!important;border:2px solid #d8e4ff!important;border-radius:999px!important;color:#3449a1!important}
+.hero{position:relative;overflow:hidden;isolation:isolate;min-height:245px;border-radius:30px!important;border:3px solid #ffffffb5!important;background:radial-gradient(circle at 85% 30%,#61d5ff70,transparent 30%),radial-gradient(circle at 12% 10%,#ffd85c65,transparent 30%),linear-gradient(115deg,#1b4ec7 0%,#386bf1 45%,#7339df 100%)!important;box-shadow:0 10px 0 #213eac30,0 24px 46px #193b9d35!important}
+.hero:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 70% 82%,#ffffff30 0 5px,transparent 6px),radial-gradient(circle at 35% 20%,#ffffff50 0 4px,transparent 5px);background-size:115px 90px,150px 130px}
+.hero h2{font-size:clamp(27px,3vw,46px)!important;font-weight:900!important;line-height:1.3!important;color:white!important;text-shadow:0 4px 0 #162b8650!important}
+.hero h2>span{color:#ffdf39!important}
+.hero p,.hero-note{color:#fff!important;font-size:clamp(14px,1.25vw,18px)!important}
+.hero-tag{background:#ffffff2b!important;color:white!important;border:2px solid #ffffff65!important;border-radius:999px!important}
+.hero .btn-primary,.btn-primary{background:linear-gradient(180deg,#ffe75c,#ffba1b)!important;color:#3a2362!important;border:2px solid #fff7bd!important;border-radius:18px!important;font-weight:900!important;box-shadow:0 6px 0 #d88b06,0 11px 24px #251e7d38!important;transition:transform .18s,box-shadow .18s!important}
+.hero .btn-primary:hover,.btn-primary:hover{transform:translateY(-3px)!important;box-shadow:0 9px 0 #d88b06,0 16px 25px #251e7d35!important}
+.hero .btn-primary:active,.btn-primary:active{transform:translateY(4px)!important;box-shadow:0 2px 0 #d88b06!important}
+.hero-art{filter:drop-shadow(0 16px 12px #142a7a55) saturate(1.35)!important}
+.panel,.metric,.course-card,.continue-card,.curriculum-row,.vocab-card,.unit-test,.free-speech,.empty-state{background:#fff!important;border:2px solid #d8e2ff!important;border-radius:22px!important;box-shadow:0 6px 0 #d5dff6,0 14px 28px #223e9a13!important}
+.metric{background:linear-gradient(145deg,#fff,#f1f6ff)!important}
+.metric strong{color:#1d2e85!important;font-size:clamp(20px,2vw,30px)!important}
+.metric-icon{border-radius:18px!important;box-shadow:inset 0 2px 0 #ffffffc9,0 5px 0 #263a8514}
+.course-card{overflow:hidden!important;transition:transform .2s,box-shadow .2s!important}
+.course-card:hover,.metric:hover,.continue-card:hover{transform:translateY(-5px)!important;box-shadow:0 11px 0 #c6d4f3,0 22px 32px #223e9a25!important}
+.course-card .course-art{background:linear-gradient(135deg,#a7baff,#ead5ff)!important}
+.course-card.teal .course-art{background:linear-gradient(135deg,#5deac9,#c7fff2)!important}
+.course-card.peach .course-art{background:linear-gradient(135deg,#ffad61,#ffe0a7)!important}
+.course-card.pink .course-art{background:linear-gradient(135deg,#ff83bd,#ffd9ec)!important}
+.course-card .course-art img{filter:saturate(1.4) contrast(1.08) drop-shadow(0 8px 8px #122d6c30)!important}
+.section-heading h2:before{content:"✦";color:#ffc12c;margin-inline-end:9px;text-shadow:0 2px 0 #e99c00}
+.progress-bar,.progress-track{border-radius:999px!important;overflow:hidden}
+.progress-bar>*,.progress-track>*{background:linear-gradient(90deg,#25d5a1,#59e45b)!important}
+.lesson-header,.page-heading{border-radius:20px}
+button,.nav-item,a{transition:transform .18s,box-shadow .18s,background .18s}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #ffb91b!important;outline-offset:4px}
+#toast{font-weight:800!important}
+@media(max-width:900px){.sidebar{background:linear-gradient(180deg,#172d86,#29247e)!important}.mobile-bottom{background:#fff!important;border-top:2px solid #d4dfff!important;box-shadow:0 -6px 20px #163f8b15!important}.hero{min-height:215px}.topbar{background:#fff!important}}
+@media(max-width:600px){main{padding-inline:15px!important}.hero{border-radius:23px!important;padding:22px!important}.hero h2{font-size:29px!important}.hero p{font-size:14px!important}.panel,.metric,.course-card,.continue-card{border-radius:18px!important}.page-greeting h1{font-size:26px!important}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
