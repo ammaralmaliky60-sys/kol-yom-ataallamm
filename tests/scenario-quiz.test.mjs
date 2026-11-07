@@ -49,7 +49,7 @@ test('shared evidence UI supports review and skill diagnostics without modifying
   assert.match(app, /l\.questions\.some\(q=>q\.context\)/);
   assert.match(skin, /\.quiz-evidence\{/);
   assert.match(skin, /\.quiz-skills\{/);
-  assert.match(read('../dist/sw.js'), /learn-everyday-v8/);
+  assert.match(read('../dist/sw.js'), /learn-everyday-v9/);
   assert.match(read('../dist/index.html'), /vivid\.css\?v=4/);
   assert.doesNotMatch(app, /localStorage\.clear\(/);
 });
